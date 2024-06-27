@@ -43,11 +43,18 @@ class Constants {
     const KEY_START = "-----BEGIN PUBLIC KEY-----\n";
     const NOTIFICATION_API_ENDPOINT_PRODUCTION = 'https://api.ebay.com/commerce/notification/v1/public_key/';
     const NOTIFICATION_API_ENDPOINT_SANDBOX = 'https://api.sandbox.ebay.com/commerce/notification/v1/public_key/';
+	const NOTIFICATION_ENDPOINT_PRODUCTION = 'https://api.ebay.com/commerce/notification/%s/%s';
+	const NOTIFICATION_ENDPOINT_SANDBOX = 'https://api.sandbox.ebay.com/commerce/notification/%s/%s';
     const PROD_BASE_URL = 'https://api.ebay.com';
     const SANDBOX_BASE_URL = 'https://api.sandbox.ebay.com';
     const SHA256 = 'sha256';
     const TOPICS = [
-        'MARKETPLACE_ACCOUNT_DELETION' => 'MARKETPLACE_ACCOUNT_DELETION'
+        'BUYER_CANCEL_REQUESTED' => 'BUYER_CANCEL_REQUESTED',
+		'ITEM_MARKED_SHIPPED' => 'ITEM_MARKED_SHIPPED',
+		'ITEM_SOLD' => 'ITEM_SOLD',
+		'MARKETPLACE_ACCOUNT_DELETION' => 'MARKETPLACE_ACCOUNT_DELETION',
+		'RETURN_CLOSED' => 'RETURN_CLOSED'
     ];
+	const VERSION = 'v1';
     const X_EBAY_SIGNATURE = 'x-ebay-signature';
 }

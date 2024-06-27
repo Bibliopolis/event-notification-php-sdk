@@ -22,6 +22,10 @@ namespace EventNotificationPHPSdk\lib\processor;
 
 use EventNotificationPHPSdk\lib\Constants;
 use EventNotificationPHPSdk\lib\processor\AccountDeletionMessageProcessor;
+use EventNotificationPHPSdk\lib\processor\BuyerCancelRequestedMessageProcessor;
+use EventNotificationPHPSdk\lib\processor\ItemMarkedShippedMessageProcessor;
+use EventNotificationPHPSdk\lib\processor\ItemSoldMessageProcessor;
+use EventNotificationPHPSdk\lib\processor\ReturnClosedMessageProcessor;
 
 class Processor {
     private $constants;
@@ -37,8 +41,16 @@ class Processor {
      */
     public function getProcessor($topic) {
         switch ($topic) {
-            case $this->constants::TOPICS['MARKETPLACE_ACCOUNT_DELETION']:
-                return new AccountDeletionMessageProcessor();
+            case $this->constants::TOPICS['BUYER_CANCEL_REQUESTED']:
+                return new BuyerCancelRequestedMessageProcessor();
+			case $this->constants::TOPICS['ITEM_MARKED_SHIPPED']:
+				return new ItemMarkedShippedMessageProcessor();
+			case $this->constants::TOPICS['ITEM_SOLD']:
+				return new ItemSoldMessageProcessor();
+			case $this->constants::TOPICS['MARKETPLACE_ACCOUNT_DELETION']:
+				return new AccountDeletionMessageProcessor();
+			case $this->constants::TOPICS['RETURN_CLOSED']:
+				return new ReturnClosedMessageProcessor();
             default:
                 throw new \Exception("Message processor not registered for: " . $topic);
         }

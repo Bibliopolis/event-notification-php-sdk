@@ -20,6 +20,7 @@
 
 namespace EventNotificationPHPSdk\lib;
 
+use EventNotificationPHPSdk\lib\Utils;
 use EventNotificationPHPSdk\lib\Constants;
 use EventNotificationPHPSdk\lib\Oauth;
 use GuzzleHttp\Client as Httpclient;
@@ -28,11 +29,74 @@ class Client {
     private $constants;
     private $cache;
     private $oauth;
+	private $utils;
 
     function __construct() {
         $this->cache = new \LRUCache\LRUCache(1000);
         $this->constants = new Constants();
+		//$this->utils = new Utils($this->cache);
     }
+
+	private function getEndpoint($endpoint, $environment)
+	{
+		$notificationApiEndpoint = sprintf($environment === $this->constants::ENVIRONMENT['SANDBOX'] ?
+			$this->constants::NOTIFICATION_ENDPOINT_SANDBOX :
+			$this->constants::NOTIFICATION_ENDPOINT_PRODUCTION, $this->constants::VERSION, $endpoint);
+		return $notificationApiEndpoint;
+	}
+
+	private function appendEndpoint($endpoint, $params)
+	{
+		if (empty($params))
+			return $endpoint;
+		$notificationApiEndpoint = $endpoint;
+		$notificationApiEndpoint .= '?';
+		foreach ($params as $key => $value) {
+			$notificationApiEndpoint .= $key . '=' . $value . '&';
+		}
+		return trim($notificationApiEndpoint, '&');
+	}
+
+	private function processCache($cacheId)
+	{
+		$$cacheId = $this->cache->get($cacheId);
+		if ($$cacheId !== null) {
+			return $$cacheId;
+		}
+	}
+
+	/**
+	 * Get all possible destinations for eBay Notification API.
+	 *
+	 * @param string $keyId
+	 * @param array $config
+	 * @return string public key
+	 */
+	public function getDestinations($params, $config) {
+		$cacheId = 'destinations';
+		$this->processCache($cacheId);
+		try {
+			$notificationApiEndpoint = $this->getEndpoint('destination', $config['environment']);
+			$accessToken = $this->getAppToken($config);
+			$uri = $this->appendEndpoint($notificationApiEndpoint, $params);
+			$headers = array(
+				'Authorization' => $this->constants::BEARER.$accessToken,
+				'Content-Type' => $this->constants::HEADERS['APPLICATION_JSON']
+			);
+			$httpclient = new Httpclient();
+			$notificationApiResponse = $httpclient->get($uri, [
+				'headers' => $headers
+			]);
+			if ($notificationApiResponse === null || $notificationApiResponse->getStatusCode() !== $this->constants::HTTP_STATUS_CODE['OK']) {
+				throw new \Exception("Get destinations failed with " . $notificationApiResponse->getStatusCode() . " for " . $uri);
+			}
+			$responseBody = json_decode($notificationApiResponse->getBody(), true);
+			$this->cache->put($cacheId, $notificationApiResponse->getBody()->getContents());
+			return $responseBody;
+		} catch(\Exception $e) {
+			throw $e;
+		}
+	}
 
     /**
      * Look for the Public key in cache, if not found call eBay Notification API.
