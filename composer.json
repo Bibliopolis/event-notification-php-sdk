@@ -3,7 +3,7 @@
     "description": "A PHP SDK for processing eBay event notifications. Bibliopolis aims to add new schemas for additional notiifications endpoints and fix problems with original repository.",
     "keywords": ["eBay", "Event Notification", "SDK", "Endpoint Validation", "bibliopolis"],
     "license": "ISC",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "autoload": {
         "psr-4": {
             "EventNotificationPHPSdk\\": "src/"
